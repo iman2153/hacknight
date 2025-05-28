@@ -8,7 +8,7 @@ function App() {
   const [user, setUser] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  
+  const [hasSearched, setHasSearched] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -16,6 +16,8 @@ function App() {
     setUser(null)
     if (githubUsername.trim()) {
       setLoading(true)
+
+      setHasSearched(true)
       try {
         const data = await getUserProfile(githubUsername.trim())
         setUser(data)
@@ -29,24 +31,31 @@ function App() {
   }
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">GitHub Username Lookup</div>
-      <form onSubmit={handleSubmit} className="chat-input-form">
-        <input
-          type="text"
-          value={githubUsername}
-          onChange={(e) => setGithubUsername(e.target.value)}
-          placeholder="Enter GitHub username..."
-          className="chat-input"
-        />
-        <button type="submit" className="submit-button" disabled={loading}>
-          {loading ? 'Loading...' : 'Send'}
-        </button>
-      </form>
-      <div className="chat-messages">
-        {error && <div className="message" style={{ color: 'red' }}>{error}</div>}
-        {user && <UserProfile user={user} />}
+    <div className="app-container">
+
+      <div className="search-container">
+        
+        <h1 className="app-title">GitHub Profile Finder</h1>
+        <form onSubmit={handleSubmit} className="search-form">
+          <input
+            type="text"
+            value={githubUsername}
+            onChange={(e) => setGithubUsername(e.target.value)}
+            placeholder="Enter GitHub username..."
+            className="search-input"
+          />
+          <button type="submit" className="search-button" disabled={loading}>
+            {loading ? 'Searching...' : 'Search'}
+          </button>
+        </form>
       </div>
+      
+      {hasSearched && (
+        <div className="results-container">
+          {error && <div className="error-message">{error}</div>}
+          {user && <UserProfile user={user} />}
+        </div>
+      )}
     </div>
   )
 }
